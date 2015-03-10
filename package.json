@@ -1,0 +1,15 @@
+{
+  "name": "slack2jira",
+  "version": "1.0.0",
+  "author": {
+    "name": "Maxim Goldfarb",
+    "email": "goldfarb@magenta-technology.ru"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "request": "~2.33.0",
+    "jira": "~0.9.2"
+  }
+}
