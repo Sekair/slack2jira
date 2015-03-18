@@ -14,7 +14,7 @@ var Integration = function(config) {
 		'iKZPv7HiJqTQrJPstkz23VF8'];
 	this.config.token = 'xoxb-3901190303-N0o4LBSoTSu9goNZS8IqnlTl';
 	this.config.jiraServer = 'jira.magenta-technology.ru/jira';
-	this.jira = new JiraApi('http', "jira.magenta-technology.ru/jira", "", "goldfarb", "852852Pb", 'latest');
+	this.jira = new JiraApi('http', "jira.magenta-technology.ru/jira", "", "goldfarb", "******", 'latest');
 	this.slack = new slack.Slack(this.config);
 	
 	this.colors = {
