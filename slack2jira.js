@@ -67,10 +67,8 @@ Integration.prototype.parseSlashCommand = function(data, response) {
 	this.jira.findIssue("MD-" + data.text, function(error, issue) {
 		if (error) {
 			console.log(error + " " + issueNumber);
-			response.write(error);
-			response.end();
 		} else {
-			console.log("Try to post message about " + issueNumber + " to channel " + data.channel_name + " " + data.channel_id);
+			console.log("Try to post message about " + issue.key + " to channel " + data.channel_name + " " + data.channel_id);
 			self.slack.send('chat.postMessage', {
 				channel: data.channel_id,
 				text: "Called by: @" + data.user_name,
@@ -98,10 +96,8 @@ Integration.prototype.parseCommonMessage = function(data, response) {
 		this.jira.findIssue(issueNumber, function(error, issue) {
 			if (error) {
 				console.log(error + " " + issueNumber + ".");
-				response.write(error);
-				response.end();
 			} else {
-				console.log("Try to post message about " + issueNumber + " to channel " + data.channel_name + " " + data.channel_id);
+				console.log("Try to post message about " + issue.key + " to channel " + data.channel_name + " " + data.channel_id);
 				self.slack.send('chat.postMessage', {
 					channel: data.channel_id,
 					text: "Called by: @" + data.user_name,
@@ -131,24 +127,27 @@ Integration.prototype.start = function() {
 	self = this;
 	http.createServer(function(request, response) {
 		request.on('data', function(chunk) {
-		    try{
-				data = self.parseRequest(chunk.toString());
-				if (self.config.validateTokens.indexOf(data.token) < 0) {
-					console.log("Try to use wrong token! " + data.token);
-					response.end();
-					return;
-				} 
-				if (data.user_name == 'slackbot') {
-					return;
-				}
-				if (data.command) {
-					self.parseSlashCommand(data, response);
-				} else {
-					self.parseCommonMessage(data, response);
-				}
-			} catch(e) {
-				console.log("CRITICAL ERROR!!! " + e);
+		    try {
+			data = self.parseRequest(chunk.toString());
+			if (self.config.validateTokens.indexOf(data.token) < 0) {
+				var error = "Trying to use wrong token: " + data.token;
+				console.log(error);
+				response.end(error);
+				return;
+			} 
+			if (data.user_name == 'slackbot') {
+				response.end();	
+				return;
 			}
+			if (data.command) {
+				self.parseSlashCommand(data, response);
+			} else {
+				self.parseCommonMessage(data, response);
+			}
+		} catch(e) {
+			console.log("Error: " + e);
+		}
+		response.end();	
 		});
 	}).listen(1337, "0.0.0.0");
 }
